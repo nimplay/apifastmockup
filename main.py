@@ -72,6 +72,16 @@ def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
+@app.delete("/users/{user_id}", response_model=UserResponse)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.id == user_id).first()
+
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(db_user)
+    db.commit()
+    return db_user
+
 
 """class User(BaseModel):
     name: str = Field(pattern='^[a-zA-Z0-9_.-]+$')
